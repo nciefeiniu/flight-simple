@@ -40,11 +40,9 @@ class AirFlight:
             return [{k: v} for k, v in self.seat_info.items() if v.get('ava') <= 0 and v.get('grade').lower() == grade.lower()]
 
     def book_air_tickets(self, seat_mark):
-        """
+        # :param seat_mark: 座位编号
+        # :return:
 
-        :param seat_mark: 座位编号
-        :return:
-        """
         if not seat_mark:
             print('Cannot be empty')
             return

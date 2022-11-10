@@ -6,17 +6,15 @@ from air_company import AirlinesCompanies
 class SearchAndBookFlight:
     def __init__(self, trip_type, origin, destination, departure_date, cabin_class, number_of_passengers,
                  return_date, companies: AirlinesCompanies):
-        """
+        # :param trip_type:  单向还是往返
+        # :param origin:  出发地代码
+        # :param destination:   目的地代码
+        # :param departure_date: 出发时间
+        # :param cabin_class: 座舱的等级
+        # :param number_of_passengers: 预定人数
+        # :param return_date: 返回时间
+        # :param companies: 航空公司管理类
 
-        :param trip_type:  单向还是往返
-        :param origin:  出发地代码
-        :param destination:   目的地代码
-        :param departure_date: 出发时间
-        :param cabin_class: 座舱的等级
-        :param number_of_passengers: 预定人数
-        :param return_date: 返回时间
-        :param companies: 航空公司管理类
-        """
         self.trip_type = trip_type
         self.origin = origin
         self.destination = destination
@@ -52,3 +50,6 @@ class SearchAndBookFlight:
                     if len(ava_seat) >= number_of_passengers:
                         result.append(flight)
         return result
+
+    def _search_transfer(self):
+        pass

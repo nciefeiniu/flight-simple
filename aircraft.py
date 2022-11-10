@@ -28,10 +28,9 @@ class Seat:
         return dict(zip(all_seat, [{'ava': 0, 'grade': self.grade} for i in range(len(all_seat))]))
 
     def _gen_seat_mark(self) -> range:
-        """
-        这是一排座位的编号，A、B、C、D。。。。。
-        :return:
-        """
+        # 这是一排座位的编号，A、B、C、D。。。。。
+        # :return:
+
         if self.grade == 'F':
             seat_mark = range(65, 65 + 3)
         elif self.grade == 'j':
@@ -44,24 +43,21 @@ class Seat:
         return [f'{row_number}{chr(i)}' for i in self._gen_seat_mark()]
 
     def start_index(self) -> list:
-        """
-        座位起始行的编号
-        :return:
-        """
+        # 座位起始行的编号
+        # :return:
+
         return self._gen_row_seat_index(self.start)
 
     def end_index(self) -> list:
-        """
-        座位结束行的编号
-        :return:
-        """
+        # 座位结束行的编号
+        # :return:
+
         return self._gen_row_seat_index(self.end)
 
     def all_seat_mark(self) -> list:
-        """
-        所有座位图
-        :return:
-        """
+        # 所有座位图
+        # :return:
+
         result = []
         for i in range(self.start, self.end + 1):
             result.append(self._gen_row_seat_index(i))
@@ -94,10 +90,9 @@ class Aircraft:
         return [row.grade for row in self.cabins]
 
     def get_cabin_info(self) -> dict:
-        """
-        获取座位信息
-        :return:
-        """
+        # 获取座位信息
+        # :return:
+
         result = {}
         for row in self.cabins:
             result.update(row.seat_info)

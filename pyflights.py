@@ -77,19 +77,17 @@ class Main:
                 print('Wrong selection, please select again')
 
     def create_airline(self):
-        """
-        创建航空公司
-        :return:
-        """
+        # 创建航空公司
+        # :return:
+
         company_name = input('Please enter the name of the airline: ')
         iata_code = input('IATA Code: ')
         self.airlines_companies.add_company(company_name, iata_code)
 
     def create_aircraft_type(self):
-        """
-        创建机型，并设置座位
-        :return:
-        """
+        # 创建机型，并设置座位
+        # :return:
+
         exists_code = self.airlines_companies.get_all_companies_code()  # 获取已经存在的航空公司代码
         iata_code = input('Airline IATA Code: ')
         if iata_code not in exists_code:
@@ -144,10 +142,9 @@ class Main:
         print(f'Total {seats} seats')
 
     def create_flight(self):
-        """
-        创建航线
-        :return:
-        """
+        # 创建航线
+        # :return:
+
         exists_code = self.airlines_companies.get_all_companies_code()  # 获取已经存在的航空公司代码
         iata_code = input('Airline IATA Code: ')
         if iata_code not in exists_code:

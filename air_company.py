@@ -76,16 +76,15 @@ class AirlinesCompanies:
         print(f'Successful Wearing Airline. company name: {company_name}, airline_code: {airline_code}')
 
     def add_cabin(self, iata_code, aircraft_type, cabin_type, conf, start_num, end_num):
-        """
         # 增加座位配置
-        :param iata_code: 航空公司代码
-        :param aircraft_type: 机型名字
-        :param cabin_type: 座位等级，Y、F、J
-        :param conf:  座位配置，1-1-1 2-2-2 3-4-3
-        :param start_num: 位置起始行
-        :param end_num:  位置结束行
-        :return:
-        """
+        # :param iata_code: 航空公司代码
+        # :param aircraft_type: 机型名字
+        # :param cabin_type: 座位等级，Y、F、J
+        # :param conf:  座位配置，1-1-1 2-2-2 3-4-3
+        # :param start_num: 位置起始行
+        # :param end_num:  位置结束行
+        # :return:
+
         aircraft = self.get_aircraft_by_name(iata_code, aircraft_type)  # 获取到这个机型
         if not aircraft:
             print('The model you need is not found')
@@ -125,12 +124,11 @@ class AirlinesCompanies:
         return [air.model for air in company.get_all_aircraft_types()]
 
     def add_aircraft(self, iata_code, model):
-        """
-        添加机型
-        :param iata_code: 航空公司代码
-        :param model: 飞机型号
-        :return:
-        """
+        # 添加机型
+        # :param iata_code: 航空公司代码
+        # :param model: 飞机型号
+        # :return:
+
         company = self._get_company_by_iata_code(iata_code)
         if not company:
             print('The airline you entered is not found')
