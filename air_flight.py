@@ -7,6 +7,7 @@ class AirFlight:
 
     def __init__(self, iata_code: str, out_flight_number: str, return_flight_number, origin_iata: str, des_iata: str,
                  departure_time: str, flight_time: str, stopover_duration: str, aircraft: Aircraft):
+        self.seat_info = {}  # 座位信息，是否被预定
         self.iata_code = iata_code  # 航空公司代码
         self.out_flight_number = out_flight_number  # 出发航班号
         self.return_flight_number = return_flight_number  # 返回航班号
@@ -24,7 +25,6 @@ class AirFlight:
                                      minutes=int(format_flight_time.split('hour')[1].split('minute')[0]))
         self.all_cabin = self.aircraft.get_all_cabin()
         self.price = {}  # 票价
-        self.seat_info = {}  # 座位信息，是否被预定
 
     def set_ticket_price(self, grade: str, price: int):
         # 设定票价，这里需要知道这个机型有哪些票价等级

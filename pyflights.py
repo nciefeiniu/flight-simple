@@ -1,5 +1,4 @@
-from aircraft import Aircraft
-from air_company import SingaporeAirlines, QantasAirlines, AirCompany, AirlinesCompanies
+from air_company import AirlinesCompanies
 from air_flight import AirFlight
 from search_and_book_flight import SearchAndBookFlight
 
@@ -71,7 +70,7 @@ class Main:
                 self.create_flight()
             elif choice == '4':
                 self.search()
-            elif choice == '5':
+            elif choice == '0':
                 _run = False
                 print('bye-bye')
             else:
@@ -196,7 +195,7 @@ class Main:
         return_date = None
         if trip_type == 'Return':
             return_date = input('Return Departure Date: ')
-        cabin_class = input('Cabin Class: (F, J, W, Y or No Preference)')
+        cabin_class = input('Cabin Class: (F, J, W, Y or No Preference)') or None
         p_number = int(input('Number of Passengers: '))
         search_handle = SearchAndBookFlight(trip_type, origin, destination, departure_date, cabin_class, p_number,
                                             return_date, self.airlines_companies)
@@ -307,3 +306,4 @@ class Main:
 
 if __name__ == '__main__':
     Main().run()
+

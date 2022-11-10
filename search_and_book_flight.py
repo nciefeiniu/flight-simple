@@ -1,8 +1,6 @@
 from datetime import datetime, timedelta
 
-from aircraft import Aircraft
-from air_flight import AirFlight
-from air_company import SingaporeAirlines, QantasAirlines, AirCompany, AirlinesCompanies
+from air_company import AirlinesCompanies
 
 
 class SearchAndBookFlight:
@@ -44,7 +42,7 @@ class SearchAndBookFlight:
 
     def _search(self, start_code, end_code, departure_date, number_of_passengers, cabin_class=None) -> list:
         _s_d = departure_date - timedelta(days=1)
-        _e_d = departure_date + timedelta(days=1)
+        _e_d = (departure_date + timedelta(days=1)).replace(hour=23, minute=59, second=59)
         result = []
         for company in self.airline_companies.companies:
             for flight in company.flights:
