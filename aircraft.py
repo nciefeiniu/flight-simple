@@ -75,9 +75,8 @@ class Seat:
 
 class Aircraft:
     # 机型类
-    cabins = []
-
     def __init__(self, iata_code: str, model: str):
+        self.cabins = []
         self.iata_code = iata_code
         self.model = model
 
@@ -87,7 +86,7 @@ class Aircraft:
 
     def get_all_cabin(self) -> list:
         # 获取所有座位等级
-        return [row.grade for row in self.cabins]
+        return list(set([row.grade for row in self.cabins]))
 
     def get_cabin_info(self) -> dict:
         # 获取座位信息

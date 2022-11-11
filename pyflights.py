@@ -196,43 +196,22 @@ class Main:
         p_number = int(input('Number of Passengers: '))
         search_handle = SearchAndBookFlight(trip_type, origin, destination, departure_date, cabin_class, p_number,
                                             return_date, self.airlines_companies)
-        search_result, return_result = search_handle.search()  # 这里返回了2个结果，第一个是去程的，第二个是返程的（如果选了返程）。
+        search_result, return_result, transfer, transfer_return = search_handle.search()  # 这里返回了4个结果，第一个是去程的，第二个是返程的（如果选了返程），第三个是中转航班，第四个是中转的返程航班
         checked_seats = []
         checked_seats_return = []
 
         # 下面是显示以及选择航班
 
-        check_flights = self.handle_search_result(cabin_class, p_number, search_result)  # 页面显示的这些航线
+        check_flights = self.handle_search_result(cabin_class, p_number, search_result, transfer)  # 页面显示的这些航线
         select_flight = input('Select Flight（Enter 0 to return to the main menu））: ')  # 选择那个航班
         if select_flight == '0':
             return
         _select = int(select_flight.strip().split(' ')[1])
         selected_flight = check_flights[_select - 1]  # 选中的航班 数据是这样的：{'flight': AirFlight, 'grade': 'F'}
-        print('Optional seats: ')
-        can_choice_seat = []
-        for seat in selected_flight['flight'].get_available_seat(grade=selected_flight['grade']):
-            can_choice_seat.append(list(seat.keys())[0])
-        print(can_choice_seat)
-        print('*' * 50)
-
-        for i in range(p_number):
-            checked_seat = input(f'Select Seat for Passenger, This is the {i+1}th, {p_number} in all（Enter 0 to return to the main menu）')
-            if checked_seat == '0':
-                return
-            checked_seats.append(checked_seat)
-
-        if trip_type == 'Return':
-            print('*' * 50)
-            print('Select return flight: ')
-            check_flights = self.handle_search_result(cabin_class, p_number, return_result)  # 页面显示的这些航线
-            select_flight = input('Select Flight（Enter 0 to return to the main menu））: ')  # 选择那个航班
-            if select_flight == '0':
-                return
-            _select = int(select_flight.strip().split(' ')[1])
-            selected_flight_return = check_flights[_select - 1]  # 选中的航班 数据是这样的：{'flight': AirFlight, 'grade': 'F'}
+        if isinstance(selected_flight.get('flight'), AirFlight):  # 如果选择的不是中转航班
             print('Optional seats: ')
             can_choice_seat = []
-            for seat in selected_flight_return['flight'].get_available_seat(grade=selected_flight_return['grade']):
+            for seat in selected_flight['flight'].get_available_seat(grade=selected_flight['grade']):
                 can_choice_seat.append(list(seat.keys())[0])
             print(can_choice_seat)
             print('*' * 50)
@@ -242,31 +221,104 @@ class Main:
                     f'Select Seat for Passenger, This is the {i + 1}th, {p_number} in all（Enter 0 to return to the main menu）')
                 if checked_seat == '0':
                     return
-                checked_seats_return.append(checked_seat)
+                checked_seats.append(checked_seat)
 
-        for _s in checked_seats:
-            selected_flight['flight'].book_air_tickets(_s)
+            if trip_type == 'Return':
+                print('*' * 50)
+                print('Select return flight: ')
+                check_flights = self.handle_search_result(cabin_class, p_number, return_result,
+                                                          transfer_return)  # 页面显示的这些航线
+                select_flight = input('Select Flight（Enter 0 to return to the main menu））: ')  # 选择那个航班
+                if select_flight == '0':
+                    return
+                _select = int(select_flight.strip().split(' ')[1])
+                selected_flight_return = check_flights[_select - 1]  # 选中的航班 数据是这样的：{'flight': AirFlight, 'grade': 'F'}
+                print('Optional seats: ')
+                can_choice_seat = []
+                for seat in selected_flight_return['flight'].get_available_seat(grade=selected_flight_return['grade']):
+                    can_choice_seat.append(list(seat.keys())[0])
+                print(can_choice_seat)
+                print('*' * 50)
 
-        if trip_type == 'Return':
-            for _s2 in checked_seats_return:
-                selected_flight_return['flight'].book_air_tickets(_s2)
+                for i in range(p_number):
+                    checked_seat = input(
+                        f'Select Seat for Passenger, This is the {i + 1}th, {p_number} in all（Enter 0 to return to the main menu）')
+                    if checked_seat == '0':
+                        return
+                    checked_seats_return.append(checked_seat)
 
-        _flight = selected_flight['flight']
+            for _s in checked_seats:
+                selected_flight['flight'].book_air_tickets(_s)
 
-        print(f'Your flight is confirmed. {_flight.iata_code} {_flight.out_flight_number}, '
-              f'Departure Time: {_flight.departure_time}, '
-              f'Estimated time of arrival: {_flight.arrive_time.strftime("%d %b %y %I:%M %p")},'
-              f'Seat: {",".join(checked_seats)}')
+            if trip_type == 'Return':
+                for _s2 in checked_seats_return:
+                    selected_flight_return['flight'].book_air_tickets(_s2)
 
-        if trip_type == 'Return':
-            _return_flight = selected_flight_return['flight']
-            print(f'Return flight. {_flight.iata_code} {_flight.out_flight_number}, '
+            _flight = selected_flight['flight']
+
+            print(f'\033[32m Your flight is confirmed. {_flight.iata_code} {_flight.out_flight_number}, '
                   f'Departure Time: {_flight.departure_time}, '
                   f'Estimated time of arrival: {_flight.arrive_time.strftime("%d %b %y %I:%M %p")},'
-                  f'Seat: {",".join(checked_seats)}')
+                  f'Seat: {",".join(checked_seats)} \033[0m')
+
+            if trip_type == 'Return':
+                _return_flight = selected_flight_return['flight']
+                print(f'\033[32m Return flight. {_flight.iata_code} {_flight.out_flight_number}, '
+                      f'Departure Time: {_flight.departure_time}, '
+                      f'Estimated time of arrival: {_flight.arrive_time.strftime("%d %b %y %I:%M %p")},'
+                      f'Seat: {",".join(checked_seats)} \033[0m')
+        else:
+            # 如果选择的是中转航班
+            flight_1 = selected_flight.get('flight')[0]  # 第一个航班
+            flight_2 = selected_flight.get('flight')[1]  # 第二个航班
+
+            print('First Airline Optional seats: ')
+            can_choice_seat_first = []
+            can_choice_seat_second = []
+            for seat in flight_1.get_available_seat(grade=selected_flight['grade']):
+                can_choice_seat_first.append(list(seat.keys())[0])
+            for seat in flight_2.get_available_seat(grade=selected_flight['grade']):
+                can_choice_seat_second.append(list(seat.keys())[0])
+            print(can_choice_seat_first)
+            print('*' * 50)
+
+            tmp = []
+            for i in range(p_number):
+                checked_seats_first = input(
+                    f'First Airline: Select Seat for Passenger, This is the {i + 1}th, {p_number} in all（Enter 0 to return to the main menu）')
+                if checked_seats_first == '0':
+                    return
+                tmp.append(checked_seats_first)
+            checked_seats.append(tmp)
+            print('*' * 50)
+            print('Second Airline Optional seats: ')
+            print(can_choice_seat_second)
+            tmp = []
+            for i in range(p_number):
+                checked_seats_first = input(
+                    f'Second Airline: Select Seat for Passenger, This is the {i + 1}th, {p_number} in all（Enter 0 to return to the main menu）')
+                if checked_seats_first == '0':
+                    return
+                tmp.append(checked_seats_first)
+            checked_seats.append(tmp)
+
+            for _index, _s in enumerate(checked_seats):
+                for __s in _s:
+                    selected_flight['flight'][_index].book_air_tickets(__s)
+
+            print(f'\033[32m Your flight is confirmed. First Airline: {flight_1.iata_code} {flight_1.out_flight_number}, '
+                  f'Origin: {flight_1.origin_iata}, Destination: {flight_1.des_iata}, '
+                  f'Departure Time: {flight_1.departure_time}, '
+                  f'Estimated time of arrival: {flight_1.arrive_time.strftime("%d %b %y %I:%M %p")}. '
+                  f'Seat: {",".join(checked_seats[0])} \n'
+                  f'Second Airline: {flight_2.iata_code} {flight_2.out_flight_number}, '
+                  f'Origin: {flight_2.origin_iata}, Destination: {flight_2.des_iata}, '
+                  f'Departure Time: {flight_2.departure_time}, '
+                  f'Estimated time of arrival: {flight_2.arrive_time.strftime("%d %b %y %I:%M %p")}. '
+                  f'Seat: {",".join(checked_seats[1])} \n \033[0m')
 
     @staticmethod
-    def handle_search_result(cabin_class, p_number, search_result) -> list:
+    def handle_search_result(cabin_class, p_number, search_result, transfer_result=None) -> list:
         num = 1
         check_flights = []
         for index, flight in enumerate(search_result):
@@ -283,24 +335,79 @@ class Main:
                 for k, v in ava_grade_seats.items():
                     if v >= p_number:
                         print(f'Result {num}')
-                        print(f'{flight.iata_code}{flight.out_flight_number}, {flight.origin_iata} to {flight.des_iata}, '
-                              f'Depart {flight.departure_time}, '
-                              f'Arrive {flight.arrive_time.strftime("%d %b %y %I:%M %p")}, Class {k}'
-                              f' ${flight.price.get(k.upper())}')
+                        print(
+                            f'{flight.iata_code}{flight.out_flight_number}, {flight.origin_iata} to {flight.des_iata}, '
+                            f'Depart {flight.departure_time}, '
+                            f'Arrive {flight.arrive_time.strftime("%d %b %y %I:%M %p")}, Class {k}'
+                            f' ${flight.price.get(k.upper())}')
                         check_flights.append({'flight': flight, 'grade': k.upper()})
                         print('*' * 50)
                         num += 1
             else:
                 print(f'Result {num}')
-                print(f'{flight.iata_code}{flight.out_flight_number}, {flight.origin_iata} to {flight.des_iata}, Depart {flight.departure_time}, '
-                      f'Arrive {flight.arrive_time.strftime("%d %b %y %I:%M %p")}, '
-                      f'Class {cabin_class} ${flight.price.get(cabin_class.upper())}')
+                print(
+                    f'{flight.iata_code}{flight.out_flight_number}, {flight.origin_iata} to {flight.des_iata}, Depart {flight.departure_time}, '
+                    f'Arrive {flight.arrive_time.strftime("%d %b %y %I:%M %p")}, '
+                    f'Class {cabin_class} ${flight.price.get(cabin_class.upper())}')
                 print('*' * 50)
                 num += 1
                 check_flights.append({'flight': flight, 'grade': cabin_class.upper()})
+
+        # 输出中转航班
+        for row in transfer_result:
+            flight_1 = row[0]
+            flight_2 = row[1]
+            if cabin_class:
+                print(f'Result {num}')
+                print(
+                    f'{flight_1.iata_code}{flight_1.out_flight_number}, {flight_1.origin_iata} to {flight_1.des_iata}, Depart {flight_1.departure_time}, '
+                    f'Arrive {flight_1.arrive_time.strftime("%d %b %y %I:%M %p")}, '
+                    f'Class {cabin_class} ${flight_1.price.get(cabin_class.upper())}')
+                print(
+                    f'{flight_2.iata_code}{flight_2.out_flight_number}, {flight_2.origin_iata} to {flight_2.des_iata}, Depart {flight_2.departure_time}, '
+                    f'Arrive {flight_2.arrive_time.strftime("%d %b %y %I:%M %p")}, '
+                    f'Class {cabin_class} ${flight_2.price.get(cabin_class.upper())}')
+                print(
+                    f'1 stopover, Total Fare {flight_1.price.get(cabin_class.upper()) + flight_2.price.get(cabin_class.upper())}')
+                print('*' * 50)
+                check_flights.append({'flight': [flight_1, flight_2], 'grade': cabin_class.upper()})
+                num += 1
+            else:
+                ava_grade_seats = {}  # 获取所有等级可用的座位量
+                ava_grade_seats_2 = {}
+                for seat in flight_1.get_available_seat():
+                    for k, v in seat.items():
+                        if v.get('ava') <= 0 and v.get('grade') not in ava_grade_seats:
+                            ava_grade_seats[v.get('grade')] = 1
+                        elif v.get('ava') <= 0 and v.get('grade') in ava_grade_seats:
+                            ava_grade_seats[v.get('grade')] += 1
+
+                for seat in flight_2.get_available_seat():
+                    for k, v in seat.items():
+                        if v.get('ava') <= 0 and v.get('grade') not in ava_grade_seats_2:
+                            ava_grade_seats_2[v.get('grade')] = 1
+                        elif v.get('ava') <= 0 and v.get('grade') in ava_grade_seats_2:
+                            ava_grade_seats_2[v.get('grade')] += 1
+
+                for k, v in ava_grade_seats.items():
+                    if v >= p_number and ava_grade_seats_2.get('k', 0) >= p_number:
+                        print(f'Result {num}')
+                        print(
+                            f'{flight_1.iata_code}{flight_1.out_flight_number}, {flight_1.origin_iata} to {flight_1.des_iata}, Depart {flight_1.departure_time}, '
+                            f'Arrive {flight_1.arrive_time.strftime("%d %b %y %I:%M %p")}, '
+                            f'Class {k} ${flight_1.price.get(k.upper())}')
+                        print(
+                            f'{flight_2.iata_code}{flight_2.out_flight_number}, {flight_2.origin_iata} to {flight_2.des_iata}, Depart {flight_2.departure_time}, '
+                            f'Arrive {flight_2.arrive_time.strftime("%d %b %y %I:%M %p")}, '
+                            f'Class {k} ${flight_2.price.get(k.upper())}')
+                        print(
+                            f'1 stopover, Total Fare {flight_1.price.get(k.upper()) + flight_2.price.get(k.upper())}')
+
+                        print('*' * 50)
+                        num += 1
+                        check_flights.append({'flight': [flight_1, flight_2], 'grade': k.upper()})
         return check_flights
 
 
 if __name__ == '__main__':
     Main().run()
-
