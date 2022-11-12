@@ -26,6 +26,10 @@ class AirFlight:
         self.all_cabin = self.aircraft.get_all_cabin()
         self.price = {}  # 票价
 
+    def __str__(self):
+        return f'{self.iata_code}{self.out_flight_number}, {self.origin_iata} to {self.des_iata},' \
+               f' Depart {self.departure_time}, Arrive {self.arrive_time.strftime("%d %b %y %I:%M %p")}, '
+
     def set_ticket_price(self, grade: str, price: int):
         # 设定票价，这里需要知道这个机型有哪些票价等级
         if grade not in self.all_cabin:

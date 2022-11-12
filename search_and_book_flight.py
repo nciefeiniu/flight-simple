@@ -21,16 +21,19 @@ class SearchAndBookFlight:
         self.departure_date = datetime.strptime(departure_date, '%d %b %y')  # 出发时间
         self.cabin_class = cabin_class
         self.number_of_passengers = int(number_of_passengers)
-        self.return_date = return_date
+        self.return_date = datetime.strptime(return_date, '%d %b %y') if return_date else None  # 返回时间
         self.airline_companies = companies
 
     def search(self):
         if self.trip_type == 'One-Way':
             return self._search(self.origin, self.destination, self.departure_date, self.number_of_passengers,
-                                self.cabin_class), [], self._search_transfer(self.origin, self.destination,
-                                                                             self.departure_date,
-                                                                             self.number_of_passengers,
-                                                                             self.cabin_class), []
+                                self.cabin_class), \
+                   [], \
+                   self._search_transfer(self.origin, self.destination,
+                                         self.departure_date,
+                                         self.number_of_passengers,
+                                         self.cabin_class), \
+                   []
         elif self.trip_type == 'Return':
             a = self._search(self.origin, self.destination, self.departure_date, self.number_of_passengers,
                              self.cabin_class)
