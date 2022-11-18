@@ -65,8 +65,7 @@ class Main:
             _add_flight(_tmp[0], _tmp[1], _tmp[2], _tmp[3], _tmp[4], _tmp[5], _tmp[6], _tmp[7], _tmp[8], int(_tmp[10]),
                         int(_tmp[12]), int(_tmp[14]))
 
-    @staticmethod
-    def menu():
+    def menu(self):
         print('-' * 50)
         print('1. Create Airline')
         print('2. Create Aircraft Type')
@@ -399,8 +398,7 @@ class Main:
                 f'Estimated time of arrival: {flight_2.arrive_time.strftime("%d %b %y %I:%M %p")}. '
                 f'Seat: {",".join(checked_seats[1])} \n \033[0m')
 
-    @staticmethod
-    def handle_search_result(cabin_class, p_number, search_result, transfer_result=None) -> list:
+    def handle_search_result(self, cabin_class, p_number, search_result, transfer_result=None) -> list:
         num = 1
         check_flights = []
         for index, flight in enumerate(search_result):
